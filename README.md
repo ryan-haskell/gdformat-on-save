@@ -8,6 +8,6 @@
 
 ## Special thanks
 
-- ✨ @Scony (for making `gdformat`)
-- ✨ @Qubus0 (for your help on the [Godot Discord](https://discord.com/invite/zH7NUgz))
-- ✨ @KANAjetzt (for your [reload_script](https://github.com/godotengine/godot/pull/83267) workaround)
+- ✨ [@Scony](https://github.com/Scony) (for creating `gdformat`)
+- ✨ [@Qubus0](https://github.com/Qubus0) (for your help on the [Godot Discord](https://discord.com/invite/zH7NUgz))
+- ✨ [@KANAjetzt](https://github.com/KANAjetzt) (for your [reload_script](https://github.com/godotengine/godot/pull/83267) workaround)
