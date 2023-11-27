@@ -21,18 +21,22 @@ func _exit_tree():
 func on_resource_saved(resource: Resource):
 	if resource is Script:
 		var script: Script = resource
-		var filepath: String = ProjectSettings.globalize_path(resource.resource_path)
+		var current_script = get_editor_interface().get_script_editor().get_current_script()
+		var text_edit: CodeEdit = (
+			get_editor_interface().get_script_editor().get_current_editor().get_base_editor()
+		)
 
-		# Run gdformat
-		var exit_code = OS.execute("gdformat", [filepath])
+		# Prevents other unsaved scripts from overwriting the active one
+		if current_script == script:
+			var filepath: String = ProjectSettings.globalize_path(resource.resource_path)
 
-		# Replace source_code with formatted source_code
-		if exit_code == SUCCESS:
-			var formatted_source = FileAccess.get_file_as_string(resource.resource_path)
-			var text_edit: CodeEdit = (
-				get_editor_interface().get_script_editor().get_current_editor().get_base_editor()
-			)
-			FormatOnSave.reload_script(text_edit, formatted_source)
+			# Run gdformat
+			var exit_code = OS.execute("gdformat", [filepath])
+
+			# Replace source_code with formatted source_code
+			if exit_code == SUCCESS:
+				var formatted_source = FileAccess.get_file_as_string(resource.resource_path)
+				FormatOnSave.reload_script(text_edit, formatted_source)
 
 
 # Workaround until this PR is merged:
