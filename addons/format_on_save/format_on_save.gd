@@ -4,17 +4,39 @@ class_name FormatOnSave extends EditorPlugin
 const SUCCESS: int = 0
 const AUTO_RELOAD_SETTING: String = "text_editor/behavior/files/auto_reload_scripts_on_external_change"
 var original_auto_reload_setting: bool
+var gdformat_path: String
 
 
 # LIFECYCLE EVENTS
 func _enter_tree():
 	activate_auto_reload_setting()
+	gdformat_path = get_gdformat_path()
 	resource_saved.connect(on_resource_saved)
 
 
 func _exit_tree():
 	resource_saved.disconnect(on_resource_saved)
 	restore_original_auto_reload_setting()
+
+
+func get_gdformat_path() -> String:
+	if OS.get_name() == "Windows":
+		return "gdformat"
+
+	# macOS & Linux
+	var output := []
+	OS.execute("python3", ["-m", "site", "--user-base"], output)
+	var python_bin_folder := (output[0] as String).strip_edges().path_join("bin")
+	if FileAccess.file_exists(python_bin_folder.path_join("gdformat")):
+		return python_bin_folder.path_join("gdformat")
+
+	# Linux dirty hardcoded fallback
+	if OS.get_name() == "Linux":
+		if FileAccess.file_exists("/usr/bin/gdformat"):
+			return "/usr/bin/gdformat"
+
+	# Global fallback
+	return "gdformat"
 
 
 # CALLED WHEN A SCRIPT IS SAVED
@@ -31,7 +53,7 @@ func on_resource_saved(resource: Resource):
 			var filepath: String = ProjectSettings.globalize_path(resource.resource_path)
 
 			# Run gdformat
-			var exit_code = OS.execute("gdformat", [filepath])
+			var exit_code = OS.execute(gdformat_path, [filepath])
 
 			# Replace source_code with formatted source_code
 			if exit_code == SUCCESS:
