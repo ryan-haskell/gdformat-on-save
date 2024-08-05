@@ -30,6 +30,21 @@ func on_resource_saved(resource: Resource):
 		if current_script == script:
 			var filepath: String = ProjectSettings.globalize_path(resource.resource_path)
 
+			# Download and manage gdtoolkit when it is not found globally
+			var exec_path: String = "gdformat"
+			if OS.execute(exec_path, ["--version"]) != SUCCESS:
+				var major_version: int = Engine.get_version_info().major
+				var python_path: String = (
+					"%s/python"
+					% ProjectSettings.globalize_path(get_script().resource_path.get_base_dir())
+				)
+				exec_path = "%s/bin/gdformat" % python_path
+				if not FileAccess.file_exists(exec_path):
+					OS.execute(
+						"pip3",
+						["install", "gdtoolkit==%d.*" % major_version, "--target=%s" % python_path]
+					)
+
 			# Run gdformat
 			var exit_code = OS.execute("gdformat", [filepath])
 
