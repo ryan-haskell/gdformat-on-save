@@ -3,6 +3,8 @@ class_name FormatOnSave extends EditorPlugin
 
 const SUCCESS: int = 0
 const AUTO_RELOAD_SETTING: String = "text_editor/behavior/files/auto_reload_scripts_on_external_change"
+const LINE_LENGTH_SETTING: String = "text_editor/appearance/guidelines/line_length_guideline_hard_column"
+
 var original_auto_reload_setting: bool
 
 
@@ -29,9 +31,11 @@ func on_resource_saved(resource: Resource):
 		# Prevents other unsaved scripts from overwriting the active one
 		if current_script == script:
 			var filepath: String = ProjectSettings.globalize_path(resource.resource_path)
+			var line_length: int = EditorInterface.get_editor_settings().get(LINE_LENGTH_SETTING)
+			var line_length_arg: String = "--line-length=%d" % line_length
 
 			# Run gdformat
-			var exit_code = OS.execute("gdformat", [filepath])
+			var exit_code = OS.execute("gdformat", [line_length_arg, filepath])
 
 			# Replace source_code with formatted source_code
 			if exit_code == SUCCESS:
