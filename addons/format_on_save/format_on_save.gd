@@ -56,6 +56,8 @@ static func reload_script(text_edit: TextEdit, source_code: String) -> void:
 
 	text_edit.tag_saved_version()
 
+	text_edit.text_changed.emit()
+
 
 # For this workaround to work, we need to disable the "Reload/Resave" pop-up
 func activate_auto_reload_setting():
